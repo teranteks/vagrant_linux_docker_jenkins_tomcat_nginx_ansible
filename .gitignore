@@ -1,0 +1,5 @@
+#Ansible var files
+**/ansible/group_vars/**
+**/ansible/host_vars/**
+**/ansible/roles/jenkins_setup/vars/**
+

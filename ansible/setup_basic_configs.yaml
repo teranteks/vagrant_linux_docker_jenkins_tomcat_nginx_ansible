@@ -3,51 +3,6 @@
 - name: Install Basic Setup 
   hosts: main
   become: yes
+  roles: 
+    - jenkins_setup
 
-  tasks: 
-
-    - name: Check Linux Distribution
-      debug: var=ansible_os_family
-
-    - block:   #Debian Block
-
-      # - name: "APT: Install aptitude package"
-      #   apt:
-      #     name: aptitude
-      #     force_apt_get: yes
-
-      - name: Apt Update
-        apt:
-          name: '*'
-          state: latest
-        become: true
-
-      - name: Install java
-        apt:
-          name: openjdk-8-jdk
-          state: present
-        become: true
-
-      #DOCKER_SETUP_CONTAINER TODO:FIXME:
-
-  
-      when: ansible_os_family == "Debian"
-
-
-    - block:   #Debian RedHat
-      
-      - name: Yum Update
-        yum:
-          name: '*'
-          state: latest
-
-      - name: Install java
-        yum:
-          name: openjdk-8-jdk
-          state: present
-        become: true
-
-      #DOCKER_SETUP_CONTAINER TODO:FIXME:
-
-     
-      when: ansible_os_family == "RedHat"

@@ -1,0 +1,277 @@
+---
+# tasks file for jenkins_setup
+    - name: Check Linux Distribution
+      debug: var=ansible_os_family
+
+    - block:   #Debian Block
+
+    #   - name: "APT: Install aptitude package"
+    #     apt:
+    #       name: aptitude
+    #       force_apt_get: yes
+
+    #   - name: Apt Update
+    #     apt:
+    #       name: '*'
+    #       state: latest
+    #     become: true
+
+
+    #   # - name: Install java
+    #   #   apt:
+    #   #     name: openjdk-8-jdk
+    #   #     state: present
+    #   #   become: true
+
+    #   - name: Install tmux
+    #     apt:
+    #       name: tmux
+    #       state: present
+    #     become: true
+
+    #   - name: Install ansible
+    #     apt:
+    #       name: ansible
+    #       state: present
+    #     become: true
+
+    #   - name: Install python
+    #     apt:
+    #       name: python
+    #       state: present
+    #     become: true
+
+    #   - name: install python3-pip
+    #     apt:
+    #       name: python3-pip
+    #       state: present
+          
+    #   # - name: Upgrade pip
+    #   #   pip: name=pip3 state=latest
+
+    #   - name: Install python-docker
+    #     apt:
+    #       name: python-docker
+    #       state: present
+    #     become: true
+        
+    #   - name: Install aptitude using apt
+    #     apt: name=aptitude state=latest update_cache=yes force_apt_get=yes  
+
+    #   - name: Install required system packages
+    #     apt: name={{ item }} state=latest update_cache=yes
+    #     loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools'] 
+      
+    #   - name: Add Docker GPG apt Key
+    #     apt_key:
+    #       url: https://download.docker.com/linux/ubuntu/gpg
+    #       state: present
+
+    #   - name: Add Docker Repository
+    #     apt_repository:
+    #       repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    #       state: present
+      
+    #   - name: Update apt and install docker-ce
+    #     apt: update_cache=yes name=docker-ce state=latest
+
+    #   - name: Install python-pip
+    #     apt:
+    #       name: python-pip
+    #       state: present
+
+    #   - name: Install Docker Module for Python
+    #     pip:
+    #       name: docker
+
+    # #DOCKER_SETUP_CONTAINER TODO:FIXME:
+         
+    #   - name: Directories For Jenkins Script
+    #     file:
+    #       path: "{{item}}"
+    #       state: directory
+    #       owner: vagrant
+    #       group: vagrant
+    #       mode: '0754'
+    #     loop:
+    #         - /tmp/jenkins/
+    #         - /tmp/jenkins/build-dockerfile
+
+    #   - name: Set up Template Jenkins Init Script
+    #     template:
+    #       src: ../templates/jenkins_init.j2
+    #       dest: /tmp/jenkins/build-dockerfile/initjenkins.groovy
+    #       mode: '0754'
+      
+    #   - name: Copy Install Plugins Script
+    #     copy:
+    #       src: ../files/install_plugins.sh
+    #       dest: /tmp/jenkins/build-dockerfile/
+    #       owner: vagrant
+    #       group: vagrant
+    #       mode: '0754'
+
+    #   - name: Copy Install Plugins TXT
+    #     copy:
+    #       src: ../files/jenkins_plugins.txt 
+    #       dest: /tmp/jenkins/build-dockerfile/jenkins_plugins.txt
+    #       owner: vagrant
+    #       group: vagrant
+    #       mode: '0754'
+
+
+    #   - name: Copy Dockerfile of Jenkins
+    #     copy:
+    #       src: ../files/Dockerfile
+    #       dest: /tmp/jenkins/build-dockerfile/
+    #       owner: vagrant
+    #       group: vagrant
+    #       mode: '0754'
+
+      # - name: Build Jenkins Container Image
+      #   # docker_image:
+      #   #   name: "{{ jenkins_image_name }}"
+      #   #   build:
+      #   #     path: /tmp/jenkins/build-dockerfile/
+      #   #     #source: build
+      #   #   state: present
+      #   command: "{{item}} chdir=/tmp/jenkins/build-dockerfile/"
+      #   with_items:
+      #     - "docker build -t {{ jenkins_image_name }} ."
+
+      - name: Create Jenkins Container
+        docker_container:
+          name: "{{jenkins_container_name}}"
+          image: "{{ jenkins_image_name }}"
+          ports: 
+            - "{{jenkins_port}}:{{jenkins_port}}" 
+          volumes: "{{jenkins_volume}}"
+          state: started
+        become: true
+
+      - name: Delete Directories 
+        file:
+          path: '{{ item }}'
+          state: absent
+        loop:
+            - /tmp/jenkins/init.groovy.d/
+            - /tmp/jenkins/build-dockerfile 
+            - /tmp/jenkins/    
+        
+
+
+      when: ansible_os_family == "Debian"
+
+
+    - block:   #Debian RedHat
+      
+      - name: Yum Update
+        yum:
+          name: '*'
+          state: latest
+
+      - name: Install java
+        yum:
+          name: openjdk-8-jdk
+          state: present
+        become: true
+
+      - name: Install tmux
+        yum:
+          name: tmux
+          state: present
+        become: true
+
+      - name: Install epel-release
+        yum:
+          name: epel-release
+          state: present
+        become: true
+
+      - name: Install ansible
+        yum:
+          name: ansible
+          state: present
+        become: true
+
+      - name: Install python
+        yum:
+          name: python
+          state: present
+        become: true
+
+
+
+
+    #DOCKER_SETUP_CONTAINER TODO:FIXME:
+         
+      - name: Directories For Jenkins Script
+        file:
+          path: '{{ item }}'
+          state: directory
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+          loop:
+            - /tmp/jenkins/
+            - /tmp/jenkins/init.groovy.d/
+            - /tmp/jenkins/build-dockerfile
+
+      - name: Set up Template Jenkins Init Script
+        template:
+          src: ../templates/jenkins_init.j2
+          dest: /tmp/jenkins/init.groovy.d/initjenkins.groovy
+      
+      - name: Copy Install Plugins Script
+        copy:
+          src: ../files/install_plugins.sh
+          dest: /tmp/jenkins/build-dockerfile/
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+
+      - name: Copy Install Plugins TXT
+        copy:
+          src: ../files/jenkins_plugins.txt 
+          dest: /tmp/jenkins/jenkins_plugins.txt
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+
+      - name: Copy Dockerfile of Jenkins
+        copy:
+          src: ../files/Dockerfile
+          dest: /tmp/jenkins/build-dockerfile/
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+
+      - name: Build Jenkins Container Image
+        docker_image:
+          name: "{{ jenkins_image_name }}"
+          build:
+            path: /tmp/jenkins/build-dockerfile/Dockerfile
+            source: build
+          state: present
+
+      - name: Create Jenkins Container
+        docker_container:
+          name: "{{jenkins_container_name}}"
+          image: "{{ jenkins_image_name }}"
+          ports: 
+            - "{{jenkins_port}}:{{jenkins_port}}" 
+          volumes: "{{jenkins_volume}}"
+          state: started
+        become: true
+
+      - name: Delete Directories 
+        file:
+          path: '{{ item }}'
+          state: absent
+          loop:
+            - /tmp/jenkins/init.groovy.d/
+            - /tmp/jenkins/build-dockerfile 
+            - /tmp/jenkins/    
+
+     
+      when: ansible_os_family == "RedHat" 

@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
 	vb.customize ["modifyvm", :id, "--memory", "2048"]
 	vb.customize ["modifyvm", :id, "--vram", "128"]
-  vb.customize ["modifyvm", :id, "--cpus", "2"]
+    vb.customize ["modifyvm", :id, "--cpus", "2"]
 	vb.customize ["modifyvm", :id, "--cpuexecutioncap", "75"]
 
 	end
@@ -22,9 +22,6 @@ Vagrant.configure("2") do |config|
   
 	config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "ansible/setup_basic_configs.yaml"
-    #ansible.inventory_path="ansible/hosts.yml"
-	
-	#ansible.sudo = true
 	
 	end
 

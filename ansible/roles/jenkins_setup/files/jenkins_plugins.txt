@@ -1,0 +1,11 @@
+pipeline-stage-step:293.v200037eefcd5
+pipeline-input-step:449.v77f0e8b_845c4
+pipeline-build-step:2.18
+github:1.34.5
+git:4.11.4
+ansible:1.1
+credentials:1139.veb_9579fca_33b_
+publish-over-ssh:1.24
+ssh-agent:295.v9ca_a_1c7cc3a_a_
+matrix-auth:3.1.5
+role-strategy:548.vb_60076577ec7
