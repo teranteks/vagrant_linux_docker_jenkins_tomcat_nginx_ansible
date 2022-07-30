@@ -9,11 +9,11 @@ def hudsonRealm = new HudsonPrivateSecurityRealm(false)
 
 instance.setSecurityRealm(hudsonRealm)
 
-hudsonRealm.createAccount("{{jenkins_master_admin}}","{{jenkins_master_admin_pass}}")
-hudsonRealm.createAccount("{{jenkins_dev_user_name}}", "{{jenkins_dev_user_pass}}")
+hudsonRealm.createAccount('{{jenkins_master_admin}}','{{jenkins_master_admin_pass}}')
+hudsonRealm.createAccount('{{jenkins_dev_user_name}}', '{{jenkins_dev_user_pass}}')
 
 def strategy = new hudson.security.GlobalMatrixAuthorizationStrategy()
-strategy.add(Jenkins.ADMINISTER, ""{{jenkins_master_admin}}"")
+strategy.add(Jenkins.ADMINISTER, '{{jenkins_master_admin}}')
 strategy.add(Jenkins.READ, '{{jenkins_dev_user_name}}')
 strategy.add(Item.DISCOVER, '{{jenkins_dev_user_name}}')
 strategy.add(Item.READ, '{{jenkins_dev_user_name}}')
