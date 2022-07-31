@@ -3,7 +3,8 @@
 - name: Install Nginx Setup 
   hosts: localhost
   connection: local
-  become: yes
+  remote_user: vagrant
+  become: true
   roles: 
     - nginx_setup
 
