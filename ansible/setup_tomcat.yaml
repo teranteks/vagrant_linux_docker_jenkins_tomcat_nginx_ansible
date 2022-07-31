@@ -1,7 +1,8 @@
 ---
 
 - name: Install Tomcat Setup 
-  hosts: all
+  hosts: localhost
+  connection: local
   become: yes
   roles: 
     - tomcat_setup
