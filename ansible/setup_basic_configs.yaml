@@ -5,6 +5,5 @@
   become: yes
   roles: 
     - jenkins_setup
-    - nginx_setup
-    - tomcat_setup
+
 

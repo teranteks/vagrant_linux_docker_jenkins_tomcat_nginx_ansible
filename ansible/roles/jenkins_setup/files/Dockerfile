@@ -1,8 +1,15 @@
 FROM jenkins/jenkins:lts-jdk11
 MAINTAINER Teranteks
-
+USER root
 ENV JAVA_OPTS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Djenkins.model.Jenkins.crumbIssuerProxyCompatibility=true"
- 
+
+#Setup necessary dependencies
+RUN apt update
+RUN apt-get -y install nano
+RUN apt-get -y install git
+RUN apt-get -y install ansible
+
+#Setup Jenkins plugins and init script 
 COPY --chown=jenkins:jenkins ./jenkins_plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
 
