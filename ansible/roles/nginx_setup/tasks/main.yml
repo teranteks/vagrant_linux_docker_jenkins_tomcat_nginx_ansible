@@ -1,0 +1,59 @@
+---
+# tasks file for nginx_setup
+
+  #Perfect work on Debian & RedHat
+      - name: Directories For Nginx conf files
+        file:
+          path: "{{item}}"
+          state: directory
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+        loop:
+            - /tmp/nginx/
+            - /tmp/nginx/build-dockerfile
+
+      - name: Set up Template Nginx conf file
+        template:
+          src: ../templates/nginx_conf_file.j2
+          dest: /tmp/nginx/build-dockerfile/nginx.conf
+          mode: '0754'
+
+      - name: Copy Dockerfile
+        copy:
+          src: ../files/Dockerfile
+          
+          dest: /tmp/nginx/build-dockerfile/
+          mode: '0754'
+          
+      - name: Build Nginx Container Image
+        command: "{{item}} chdir=/tmp/nginx/build-dockerfile/"
+        with_items:
+          - "docker build -t {{ nginx_image_name }} ."
+          
+      
+      - name: Create Nginx Container
+        docker_container:
+          name: "{{nginx_container_name}}"
+          image: "{{ nginx_image_name }}"
+          networks:
+            - name: "{{network_name}}"
+          ports: 
+            - "{{nginx_port}}:{{nginx_port}}" 
+          state: started
+        become: true
+
+      - name: Remove container from default bridge network
+        docker_container:
+          name: "{{nginx_container_name}}"
+          networks:
+            - name: "{{network_name}}"
+          purge_networks: yes
+
+      - name: Delete Directories 
+        file:
+          path: '{{ item }}'
+          state: absent
+        loop:
+            - /tmp/nginx/build-dockerfile 
+            - /tmp/nginx/  

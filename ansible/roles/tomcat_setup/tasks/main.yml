@@ -1,0 +1,146 @@
+---
+# tasks file for tomcat_setup
+    - name: Check Linux Distribution
+      debug: var=ansible_os_family
+
+    - block:   #Debian Block
+    
+       #Tomcat Container
+
+      - name: Directories For Tomcat Init
+        file:
+          path: "{{item}}"
+          state: directory
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+        loop:
+            - /tmp/tomcat/
+            - /tmp/tomcat/build-dockerfile
+
+      - name: Copy Dockerfile of Tomcat
+        copy:
+          src: ../files/Dockerfile
+          dest: /tmp/tomcat/build-dockerfile/
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+
+      - name: Copy WebSite for Tomcat
+        copy:
+          src: ../files/retro_gamer_website
+          dest: /tmp/tomcat/build-dockerfile/retro_gamer
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+
+      - name: Build Tomcat Container Image
+        command: "{{item}} chdir=/tmp/tomcat/build-dockerfile/"
+        with_items:
+          - "docker build -t {{ tomcat_image_name }} ."
+
+      - name: Create Tomcat Container
+        docker_container:
+          name: "{{tomcat_container_name}}"
+          image: "{{ tomcat_image_name }}"
+          networks:
+            - name: "{{network_name}}"
+          ports: 
+            - "{{tomcat_port}}:{{tomcat_port}}" 
+          volumes: "{{tomcat_volume}}"
+          env:
+            TOMCAT_USERNAME: "{{tomcat_admin}}"
+            TOMCAT_PASSWORD: "{{tomcat_admin_pass}}"
+            TOMCAT_SHUTDOWN_PORT_NUMBER: "{{shutdown_port}}"
+            TOMCAT_HTTP_PORT_NUMBER: "{{http_port}}"
+            TOMCAT_INSTALL_DEFAULT_WEBAPPS: "{{tomcat_default_apps}}"
+          state: started
+        become: true
+
+      - name: Remove container from default bridge network
+        docker_container:
+          name: "{{tomcat_container_name}}"
+          networks:
+            - name: "{{network_name}}"
+          purge_networks: yes
+
+      - name: Delete Directories 
+        file:
+          path: '{{ item }}'
+          state: absent
+        loop:
+            - /tmp/tomcat/build-dockerfile 
+            - /tmp/tomcat/    
+
+      when: ansible_os_family == "Debian"
+
+    - block:   #RedHat
+
+     #Tomcat Container
+
+      - name: Directories For Tomcat Init
+        file:
+          path: "{{item}}"
+          state: directory
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+        loop:
+            - /tmp/tomcat/
+            - /tmp/tomcat/build-dockerfile
+
+      - name: Copy Dockerfile of Tomcat
+        copy:
+          src: ../files/Dockerfile
+          dest: /tmp/tomcat/build-dockerfile/
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+
+      - name: Copy WebSite for Tomcat
+        copy:
+          src: ../files/retro_gamer_website
+          dest: /tmp/tomcat/build-dockerfile/retro_gamer
+          owner: vagrant
+          group: vagrant
+          mode: '0754'
+
+      - name: Build Tomcat Container Image
+        command: "{{item}} chdir=/tmp/tomcat/build-dockerfile/"
+        with_items:
+          - "docker build -t {{ tomcat_image_name }} ."
+
+      - name: Create Tomcat Container
+        docker_container:
+          name: "{{tomcat_container_name}}"
+          image: "{{ tomcat_image_name }}"
+          networks:
+            - name: "{{network_name}}"
+          ports: 
+            - "{{tomcat_port}}:{{tomcat_port}}" 
+          volumes: "{{tomcat_volume}}"
+          env:
+            TOMCAT_USERNAME: "{{tomcat_admin}}"
+            TOMCAT_PASSWORD: "{{tomcat_admin_pass}}"
+            TOMCAT_SHUTDOWN_PORT_NUMBER: "{{shutdown_port}}"
+            TOMCAT_HTTP_PORT_NUMBER: "{{http_port}}"
+            TOMCAT_INSTALL_DEFAULT_WEBAPPS: "{{tomcat_default_apps}}"
+          state: started
+        become: true
+
+      - name: Remove container from default bridge network
+        docker_container:
+          name: "{{tomcat_container_name}}"
+          networks:
+            - name: "{{network_name}}"
+          purge_networks: yes
+
+      - name: Delete Directories 
+        file:
+          path: '{{ item }}'
+          state: absent
+        loop:
+            - /tmp/tomcat/build-dockerfile 
+            - /tmp/tomcat/    
+
+      when: ansible_os_family == "RedHat" 

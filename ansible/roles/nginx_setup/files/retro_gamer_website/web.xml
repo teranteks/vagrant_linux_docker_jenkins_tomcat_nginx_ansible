@@ -1,0 +1,22 @@
+<web-app
+        version="3.0"
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+    <distributable/>
+    
+    <!-- TODO:FIXME: uncomment in case of need https -->
+    <!-- <security-constraint>
+                <web-resource-collection>
+                        <web-resource-name>HTTPS Get Only</web-resource-name>
+                        <url-pattern>/*</url-pattern>
+                        <http-method>GET</http-method>
+                </web-resource-collection>
+
+                <user-data-constraint>
+                        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+                </user-data-constraint>
+        </security-constraint> -->
+
+</web-app>

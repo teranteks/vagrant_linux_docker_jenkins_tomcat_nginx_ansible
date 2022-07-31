@@ -1,5 +1,12 @@
 #Ansible var files
 **/ansible/group_vars/**
 **/ansible/host_vars/**
+
 **/ansible/roles/jenkins_setup/vars/**
+**/ansible/roles/tomcat_setup/vars/**
+**/ansible/roles/nginx_setup/vars/**
+
+**/ansible/roles/jenkins_setup/tests
+**/ansible/roles/tomcat_setup/tests
+**/ansible/roles/nginx_setup/tests
 
