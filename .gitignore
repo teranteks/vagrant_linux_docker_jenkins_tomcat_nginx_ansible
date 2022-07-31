@@ -10,3 +10,5 @@
 **/ansible/roles/tomcat_setup/tests/**
 **/ansible/roles/nginx_setup/tests/**
 
+**/screenshots/**
+

@@ -1,0 +1,253 @@
+---
+    - block: #Debian Block
+      - name: "APT: Install aptitude package"
+        apt:
+          name: aptitude
+          force_apt_get: yes
+
+      - name: Apt Update
+        apt:
+          name: '*'
+          state: latest
+        become: true
+
+      - name: Install tmux
+        apt:
+          name: tmux
+          state: present
+        become: true
+
+      - name: Install ansible
+        apt:
+          name: ansible
+          state: latest
+        become: true
+
+      - name: Install python
+        apt:
+          name: python
+          state: present
+        become: true
+
+      - name: Install python3-pip
+        apt:
+          name: python3-pip
+          state: present
+          
+      - name: Install python-docker
+        apt:
+          name: python-docker
+          state: present
+        become: true
+        
+      - name: Install aptitude using apt
+        apt: name=aptitude state=latest update_cache=yes force_apt_get=yes  
+
+      - name: Install required system packages
+        apt: name={{ item }} state=latest update_cache=yes
+        loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools'] 
+      
+      - name: Add Docker GPG apt Key
+        apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
+
+      - name: Add Docker Repository
+        apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu bionic stable
+          state: present
+      
+      - name: Update apt and install docker-ce
+        apt: update_cache=yes name=docker-ce state=latest
+
+      - name: Install python-pip
+        apt:
+          name: python-pip
+          state: present
+
+      - name: Install Docker Module for Python
+        pip:
+          name: docker
+
+      - name: Ensure the jenkins apt repository key is installed
+        apt_key: url=https://pkg.jenkins.io/debian-stable/jenkins.io.key state=present
+        become: true
+
+      - name: Ensure the repository is configured
+        apt_repository: repo='deb https://pkg.jenkins.io/debian-stable binary/' state=present
+        become: true
+
+      - name: "APT: Install aptitude package"
+        apt:
+          name: aptitude
+          force_apt_get: yes
+      
+      - name: Apt Update
+        apt:
+          name: '*'
+          state: latest
+        become: true
+
+      - name: Install java
+        apt:
+          name: openjdk-8-jdk
+          state: present
+        become: true
+
+      - name: Install jenkins
+        apt:
+          name: jenkins
+          state: latest
+
+      when: ansible_os_family == "Debian"
+
+
+    - block: #RedHat Block
+
+      - name: Yum Update
+        yum:
+          name: '*'
+          state: latest
+
+      - name: Install java
+        yum:
+          name: openjdk-8-jdk
+          state: present
+        become: true
+
+      - name: Install tmux
+        yum:
+          name: tmux
+          state: present
+        become: true
+
+      - name: Install epel-release
+        yum:
+          name: epel-release
+          state: present
+        become: true
+
+      - name: Install ansible
+        yum:
+          name: ansible
+          state: latest
+        become: true
+
+      - name: Install python
+        yum:
+          name: python
+          state: present
+        become: true
+
+      - name: Install python3-pip
+        apt:
+          name: python3-pip
+          state: present
+        
+      - name: Install python-docker
+        apt:
+          name: python-docker-py
+          state: present
+        become: true
+      
+      - name: Add the official Docker repository, download the latest version of Docker, and install it
+        command: "curl -fsSL https://get.docker.com/ | sh"
+        become: true
+        
+      - name: Start Docker
+        service:
+          name: docker
+          enabled: yes
+          state: started
+        become: true
+
+      - name: Import the GPG key
+        shell: curl --silent --location http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo | sudo tee /etc/yum.repos.d/jenkins.repo
+        become: true
+
+      - name: Add The Repository To System
+        shell: rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+        become: true
+
+      - name: Install java
+        yum:
+          name: openjdk-8-jdk
+          state: present
+        become: true
+
+      - name: Install jenkins
+        yum:
+          name: jenkins
+          state: latest
+        become: true
+
+      - name: Install python-pip
+        yum:
+          name: python-pip
+          state: latest
+        become: true
+
+      when: ansible_os_family == "RedHat"
+
+    - name: Create a docker network
+      docker_network:
+          name: "{{network_name}}"
+
+    - name: Daemon-Reload To Pick Up Config Changes
+      systemd:
+       daemon_reload: true
+
+    - name: Start Jenkins
+      service:
+         name: jenkins
+         state: started
+         enabled: yes
+
+    - name: Configure JVM Arguments
+      lineinfile:
+        dest: /etc/default/jenkins
+        regexp: '^JAVA_ARGS='
+        line: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Djenkins.model.Jenkins.crumbIssuerProxyCompatibility=true"'
+    
+    - name: Create initialization scripts directory
+      file: 
+        path: /var/lib/jenkins/init.groovy.d
+        state: directory
+        mode: '755'
+    
+    - name: Add initialization scripts to directory
+      template:
+          src: ../templates/init_jenkins.j2
+          dest: /var/lib/jenkins/init.groovy.d/initjenkins.groovy
+
+  
+    - name: Restart Jenkins
+      service: 
+        name: jenkins
+        state: restarted 
+    
+
+    - name: Install Jenkins Plugins on behalf of Jenkins Admin User
+      jenkins_plugin:
+        name: '{{item}}'
+        url: "http://{{url_jen}}"
+        url_username: '{{jenkins_master_admin}}'
+        url_password: '{{jenkins_master_admin_pass}}'
+        force_basic_auth: yes
+        with_dependencies: yes
+        timeout: 90
+        state: present
+      with_items: '{{install_plugins}}'
+      retries: 10
+      delay: 2
+      register: plugin_results
+      until: plugin_results is success
+      notify: 
+        - Restart Jenkins 
+
+    
+    
+    - name: Restart Jenkins
+      service: 
+        name: jenkins
+        state: restarted 

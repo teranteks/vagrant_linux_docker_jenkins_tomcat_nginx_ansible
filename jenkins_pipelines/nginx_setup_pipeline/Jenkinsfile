@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('SCM checkout') {
             steps {
-                     git branch: 'main', credentialsId: 'git_key', url: 'git@github.com:teranteks/vagrant_linux_docker_jenkins_tomcat_nginx.git'
+                     git branch: 'main', credentialsId: 'git_key', url: 'git@github.com:teranteks/vagrant_linux_docker_jenkins_tomcat_nginx_ansible.git'
                 
             }
         }
@@ -14,15 +14,20 @@ pipeline {
               script{
                     withCredentials([string(credentialsId: 'jen_workspace', variable: 'workspace')]) {
                         sh 'cd $workspace'
-                        sh 'ls -altr'
                     }
               }
           }
         }
         
-        stage('ansible') {
+        stage('Ansible Playbook, NGINX Setup') {
           steps{
-                sh 'ansible-playbook /var/jenkins_home/workspace/nginx_setup/ansible/setup_nginx.yaml -i /var/jenkins_home/workspace/nginx_setup/ansible/inventory.ini'
+              script{
+                  withCredentials([string(credentialsId: 'jen_workspace', variable: 'workspace')]) {                 
+                  withCredentials([file(credentialsId: 'nginx_vars', variable: 'nginx_vars')]) {
+                          sh "ansible-playbook $workspace/nginx_setup_pipeline/ansible/setup_nginx.yaml -i $workspace/nginx_setup_pipeline/ansible/inventory.ini --extra-vars '@$nginx_vars' "
+                    }
+                }
+              }
           }
         }
     }

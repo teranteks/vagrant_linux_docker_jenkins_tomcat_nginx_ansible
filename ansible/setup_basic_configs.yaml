@@ -1,7 +1,7 @@
 ---
 
 - name: Install Basic Setup 
-  hosts: all
+  hosts: main
   become: yes
   roles: 
     - jenkins_setup

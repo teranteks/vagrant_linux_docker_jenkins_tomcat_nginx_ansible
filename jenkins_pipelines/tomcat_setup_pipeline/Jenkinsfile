@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('SCM checkout') {
+            steps {
+                     git branch: 'main', credentialsId: 'git_key', url: 'git@github.com:teranteks/vagrant_linux_docker_jenkins_tomcat_nginx_ansible.git'
+                
+            }
+        }
+        
+        stage('Cd In Jenkins WorkSpace') {
+          steps{
+              script{
+                    withCredentials([string(credentialsId: 'jen_workspace', variable: 'workspace')]) {
+                        sh 'cd $workspace'
+                    }
+              }
+          }
+        }
+        
+        stage('Ansible Playbook, Tomcat Setup') {
+          steps{
+              script{
+                
+                  withCredentials([string(credentialsId: 'jen_workspace', variable: 'workspace')]) {                
+                  withCredentials([file(credentialsId: 'tomcat_vars', variable: 'tomcat_vars')]) {
+                          sh "ansible-playbook $workspace/tomcat_setup_pipeline/ansible/setup_tomcat.yaml -i $workspace/tomcat_setup_pipeline/ansible/inventory.ini --extra-vars '@$tomcat_vars' "
+                    }
+                }
+              }
+          }
+        }
+    }
+}
