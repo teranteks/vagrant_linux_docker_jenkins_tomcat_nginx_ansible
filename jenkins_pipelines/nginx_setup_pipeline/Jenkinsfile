@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('SCM checkout') {
+            steps {
+                withCredentials([string(credentialsId: 'git_url', variable: 'git_url')]) {
+                     git branch: 'main', credentialsId: 'git_key', url: '$git_url'
+                }
+            }
+        }
+        stage('Cd In Jenkins WorkSpace') {
+            withCredentials([string(credentialsId: 'jen_workspace', variable: 'workspace')]) {
+                sh 'cd $workspace'
+            }
+        }
+        
+        stage('Ansible Execution') {
+            steps {
+                ansible_playbook( inventory: './vagrant_linux_docker_jenkins_tomcat_nginx/ansible/inventory.txt',
+                installation: 'ansible', limit: '', playbook: "./vagrant_linux_docker_jenkins_tomcat_nginx/ansible/setup_nginx.yaml", 
+                extras: '')
+            }
+        }
+    }
+    
+}

@@ -6,7 +6,7 @@
 **/ansible/roles/tomcat_setup/vars/**
 **/ansible/roles/nginx_setup/vars/**
 
-**/ansible/roles/jenkins_setup/tests
-**/ansible/roles/tomcat_setup/tests
-**/ansible/roles/nginx_setup/tests
+**/ansible/roles/jenkins_setup/tests/**
+**/ansible/roles/tomcat_setup/tests/**
+**/ansible/roles/nginx_setup/tests/**
 

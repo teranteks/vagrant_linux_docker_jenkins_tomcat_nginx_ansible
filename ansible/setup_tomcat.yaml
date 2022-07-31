@@ -1,0 +1,8 @@
+---
+
+- name: Install Tomcat Setup 
+  hosts: main
+  become: yes
+  roles: 
+    - tomcat_setup
+
