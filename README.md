@@ -1,7 +1,7 @@
 ## Vagrant_Linux_Docker_Jenkins_Tomcat_Nginx_Ansible Repo
 ---
 ### INFO:
->In project was used such technologies: 
+>**In project was used such technologies:** 
 >* Vagrant
 >* Jenkins
 >* Linux(Ubuntu/Centos7)
@@ -11,7 +11,7 @@
 >* Nginx
 >
 >
->List Of Used Jenkins Plugins:
+>**List Of Used Jenkins Plugins:**
 >* Pipeline
 >* Git
 >* GitHub
@@ -34,7 +34,7 @@
 >---
 >
 ---
-## Steps To Deploy:
+## **Steps To Deploy:**
 1. Firstly clone repo:
     * `git clone git@github.com:teranteks/vagrant_linux_docker_jenkins_tomcat_nginx.git `
 
@@ -180,16 +180,16 @@ and run this commmand in folder with **Vagrantfile**:
 7. Go by **NGINX url**, (For example:http://192.168.3.215:80), that was set and check done work. **NGINX running and send all requests to Tomcat. Nginx work like Reverse Proxy Server. Tomcat work just like a simple Web Server.**
 
 
-## Website, that is proxied by NGINX to Tomcat:
+## **Website, that is proxied by NGINX to Tomcat:**
 ![WebSite_After_Proxy](./readme_screenshots/tomcat_website_after_nginx_proxypass.png)
 
-## Jenkins Login & Dashboard Page:
+## **Jenkins Login & Dashboard Page:**
 ![Jenkins](./readme_screenshots/jenkins_login.png)
 
 ![Jenkins_Dashboard](./readme_screenshots/jenkins_dashboard.png)
 
-## Docker running containers, NGINX and Tomcat:
+## **Docker running containers, NGINX and Tomcat:**
 ![Docker_Containers](./readme_screenshots/containers.png)
 
-## Used Docker Images:
+## **Used Docker Images:**
 ![Docker_Images](./readme_screenshots/docker_images.png)
