@@ -188,6 +188,9 @@
         become: true
 
       when: ansible_os_family == "RedHat"
+    
+    - name: Change docker permissions
+      file: path=/var/run/ owner=vagrant group=vagrant mode=0666 state=directory recurse=yes
 
     - name: Create a docker network
       docker_network:
@@ -220,7 +223,6 @@
           src: ../templates/init_jenkins.j2
           dest: /var/lib/jenkins/init.groovy.d/initjenkins.groovy
 
-  
     - name: Restart Jenkins
       service: 
         name: jenkins
@@ -244,10 +246,13 @@
       until: plugin_results is success
       notify: 
         - Restart Jenkins 
-
-    
-    
+   
     - name: Restart Jenkins
       service: 
         name: jenkins
         state: restarted 
+
+    - name: Delete Jenkins Init Script
+      file:
+        path: /var/lib/jenkins/init.groovy.d/initjenkins.groovy
+        state: absent

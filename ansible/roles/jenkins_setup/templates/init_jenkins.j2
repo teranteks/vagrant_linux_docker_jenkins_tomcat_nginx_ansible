@@ -8,8 +8,8 @@ def instance = Jenkins.getInstance()
 
 def hudsonRealm = new HudsonPrivateSecurityRealm(false)
 
-hudsonRealm.createAccount('admin_cide', 'jenkinspassword1234')
-hudsonRealm.createAccount('james', 'james412312')
+hudsonRealm.createAccount('{{jenkins_master_admin}}', '{{jenkins_master_admin_pass}}')
+hudsonRealm.createAccount('{{jenkins_dev_user_name}}', '{{jenkins_dev_user_pass}}')
    
 instance.setSecurityRealm(hudsonRealm)
 

@@ -1,0 +1,16 @@
+pipeline {
+    agent main
+
+    stages {      
+        stage('Stop, Delete Nginx and Tomcat Containers & Images') {
+          steps{
+             //Stop, Delete Containers
+                sh 'sudo docker stop $(docker ps -a -q)'
+                sh 'sudo docker rm -vf $(docker ps -a -q)'
+            //Delete Images of Tomcat,Nginx Containers
+                sh 'sudo docker rmi -f $(docker images -a -q)'
+              }
+          }
+        }
+}
+
