@@ -177,7 +177,7 @@ and run this commmand in folder with **Vagrantfile**:
     * Do all the same steps for NGINX or Tomcat(Depends what was set first).
 
 
-7. Go by **NGINX url**, (For example:http://192.168.3.215:80),that was set and check done work. **NGINX running and send all requests to Tomcat. Nginx work like Reverse Proxy Server. Tomcat work just like a simple Web Server.**
+7. Go by **NGINX url**, (For example:http://192.168.3.215:80), that was set and check done work. **NGINX running and send all requests to Tomcat. Nginx work like Reverse Proxy Server. Tomcat work just like a simple Web Server.**
 
 
 ## **Website, that is proxied by NGINX to Tomcat:**
