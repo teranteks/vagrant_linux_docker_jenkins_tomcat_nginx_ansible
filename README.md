@@ -30,7 +30,7 @@
 > Infrastructure View:
 >
 >![set_up](./readme_screenshots/set_up.png)
->#### **Over roll deploy:** Virtual machine, created and provisioned by Vagrant, than where was installed Jenkins using Ansible. Later after creating, configuring of Jenkins jobs, Tomcat and Nginx was deployed on this VM like containers for further work.
+>#### **Overall deploy:** Virtual machine, created and provisioned by Vagrant, then was installed Jenkins using Ansible. Later, after creating, configuring Jenkins jobs, Tomcat and Nginx were deployed on this VM like containers for further work.
 >---
 >
 ---
@@ -109,9 +109,9 @@ and run this commmand in folder with **Vagrantfile**:
     
 * `vagrant up`
 
-3. After execution of previous command, you will have a VM with necessary dependencies and installed jenkins for further work.
-4. Later login into Jenkins using **IP:PORT**, that was set by default or that your set on your own in **Vagrantfile**.
-5. Before creating jobs, firstly setup credentials, and set Jenkins agent label:
+3. After execution of the previous command, you will have a VM with the necessary dependencies and installed jenkins for further work.
+4. Later login into Jenkins using IP:PORT, that was set by default or set on your own in **Vagrantfile**.
+5. Before creating jobs, firstly, setup credentials, and set Jenkins agent label:
     * **git-key**, type of cred **"SSH Username with private key"**, add ssh private key to jenkins with username and add public key to **GitHub "SSH and GPG Keys Section"**, used for pulling repo from GitHub.
     * **tomcat_vars**, type of cred **Secret file**, here we adding file with assigned variables that playbook will use. **List of variables:**
         * **shutdown_port:**, for example: **8006**.
